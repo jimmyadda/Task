@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/mytasks.css" media="screen"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <title>My Tasks</title>
+</head>
+<body>
+<div class="items">
+    <div class="container">
+        <div class="row">
+            <h3>My Open Tasks</h3>
+          <div class="col-xs-12">
+            <table  id="taskstbl">
+              <thead>
+                <tr>                  
+                  <th>Project</th>
+                  <th>Task Title</th>
+                  <th>Description</th>
+                  <th>Priority</th>
+                  <th>Due Date</th>
+                  <th ></th>
+                  <th style="display: none;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for task in mytasks%}
+                <tr  class="row">
+                  <td>{{ task['foldername'] }}</td>
+                  <td>{{ task['title'] }}</td>
+                  <td>{{ task['desc'][:50] }}</td>
+                  <td>{{ task['priority'] }}</td>
+                  <td>{{ task['due'] }}</td>  
+                  <td name="id" class="taskid" style="display: none;">{{ task['id'] }}</td>
+                  <td name="id" class="folderid" style="display: none;">{{ task['folderid'] }}</td>
+                  <td>
+                    <button type="button" class="use-task"></button>
+                </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="row">
+          <h3>All Closed Tasks</h3>
+        <div class="col-xs-12">
+          <table  id="taskstbl">
+            <thead>
+              <tr>                
+                <th>Project</th>
+                <th>Task Title</th>
+                <th>Description</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+                <th>Assigned To</th>
+                <th ></th>
+                <th style="display: none;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for closetask in closedtasks%}
+              <tr class='row'>
+                <td>{{ closetask['foldername'] }}</td>
+                <td>{{ closetask['title'] }}</td>
+                <td>{{ closetask['desc'][:50] }}</td>
+                <td>{{ closetask['priority'] }}</td>
+                <td>{{ closetask['due'] }}</td>
+                <td>{{ closetask['assignto'] }}</td>
+                <td name="id" class="taskid"style="display: none;">{{ closetask['id'] }}</td>
+                <td name="id" class="folderid" style="display: none;">{{ closetask['folderid'] }}</td>
+                <td>
+                  <button type="button" class="use-task"></button>
+              </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      </div>
+</div>
+<script type="text/javascript" src="/static/main.js"></script>
+
+  <script type="text/javascript">
+      $(".use-task").click(function() {
+    var $row = $(this).closest("tr");    // Find the row
+    var id = $row.find(".taskid").text(); // Find the text
+    var folderid = $row.find(".folderid").text(); // Find the text
+
+    window.open("main?folderid="+folderid+"&id="+id, '_blank');
+});
+  </script>
+</body>
+</html>

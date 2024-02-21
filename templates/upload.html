@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, Initial-scale=1">
+    </head>
+
+    <body>
+        <div class="pageheader">
+            <div class="titlebar">Files for task : {{ task.id }}</div>
+        </div>
+
+        <form method="POST" action="/upload" enctype="multipart/form-data">
+            <dl>
+                <p>
+                    <input type="file" name="file" autocomplete="off" required>
+                </p>
+            </dl>
+            <p>
+                <input type="submit" value="Submit">
+            </p>
+            <input type="hidden" name="id" value="{{ task.id }}">
+            <input type="hidden" name="folderid" value="{{ task.folderid }}">
+            <input type="hidden" name="userid" value="{{ task.userid }}">
+        </form>
+</body>
+<script>
+    window.onunload = refreshParent;
+    function refreshParent() {
+        
+        window.opener.location.reload();
+        window.close();
+    }
+</script>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/main.css" media="screen"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Tasks</title>
+</head>
+<body>
+    <div class="pageheader">
+        <div class="titlebar">Tasks for {{ user.name }}  <a class=""  href="/mytasks">My Tasks</a></div>
+    </div>
+    <div class="container">
+        <div class="folders">
+            <div class="header">Projects</div>
+            <button class="blue icon-new" id="new_folder_button">New</button>
+            <div>
+                <table>
+                    
+            {% for folder in folders %}
+            <tr>
+                <td style="width: 100%;">
+                <a style="width: 80%;" class="folderitem" id= {{folder.id}} name= {{ folder.name }} href="?folderid={{ folder.id }}">{{ folder.name }}                
+            </a>
+        </td>
+        <td>
+            <img id="removefolder" class="removebtn" src=""></img>
+        </td>
+            </tr>
+            {% endfor %}
+            
+        </table>
+    </div>
+            <div class="controls">
+                <!-- <button class="gray icon-settings">Settings</button> -->
+                <button class="gray icon-exit" id="logout_button">Logout</button>
+            </div>
+        </div>
+        
+
+        <div class="items">
+            <div class="header">Summary</div>
+            <button class="blue icon-new" id="new_task_button">New</button>
+            {% for task in tasks %}
+                <a class="itempreview" href="?folderid={{ task['folderid'] }}&id={{ task['id'] }}">
+                    <div class="itempreviewheader">{{ task['title'] }}</div>
+                    <div class="itempreviewtext">{{ task['desc'][:50] }}...</div>
+                    <div class="itempreviewtime">{{ task['due'] }}</div>
+                    <div class="itempreviewtime">assignto: {{ task['assignto'] }}</div>
+                </a>
+            {% endfor %}
+        </div>
+        <div class="main">
+            <form method="POST" enctype="multipart/form-data" action="/save_task">
+                <div class="maintitle"><input type="text" name="title" value="{{ maintask.title }}" placeholder="Task title" class="tasktitle"></div>
+                <div class="two-columns">
+                    <div><label for="due">Due</label></div>
+                    <input type="date" name="due" value="{{ maintask.due }}" placeholder="">
+                    <div><label for="reminder">Reminder</label></div>
+                    <input type="date" name="reminder" value="{{ maintask.reminder }}" placeholder="">
+                    <div><label for="created">Created</label></div>
+                    <input readonly type="date" name="created" value="{{ maintask.created }}" placeholder="">
+                    <div><label for="category">Category</label></div>
+                    <select name="category" value="{{ maintask.category }}">
+                    {% for TaskCategory in TaskCategories %}
+                        <option {{"selected='selected'" if maintask.category == TaskCategory['category'] else ""}}>{{ TaskCategory['category'] }}</option>
+                    {% endfor %}                    
+                    </select>                    
+                    <div><label for="priority">Priority</label></div>
+                    <select name="priority" value="{{ maintask.priority }}">
+                        <option {{ "selected='selected'" if maintask.priority == 1 else "" }}>1</option>
+                        <option {{ "selected='selected'" if maintask.priority == 2 else "" }}>2</option>
+                        <option {{ "selected='selected'" if maintask.priority == 3 else "" }}>3</option>
+                    </select>
+                    <div><label for="status">Status</label></div>
+                    <select  name="status" value="{{ maintask.status }}">
+                        <option {{ "selected='selected'" if maintask.status == 'OPEN' else "" }}>OPEN</option>
+                        <option {{ "selected='selected'" if maintask.status == 'CLOSE' else "" }}>CLOSE</option>
+                    </select>
+                    
+                    <div><label for="assignto">Assign To</label></div>
+                    <select name="assignto" value="{{ maintask.assignto }}">
+                    {% for taskuser in task_users %}
+                        <option {{"selected='selected'" if maintask.assignto == taskuser['name'] else ""}}>{{ taskuser['name'] }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="maintext">
+                    <textarea name="desc">{{ maintask.desc }}</textarea>
+                </div>
+                <input type="submit" name="submit-save" class="blue icon-save" value="Save update">
+                {% if maintask.status == 'CLOSE'%}
+                <input type="submit" name="submit-reopen" class="green icon-complete" value="Reopen task">
+                {% else %}
+                <input type="submit" name="submit-close" class="green icon-complete" value="close task">
+                {% endif %}               
+                <input type="submit" name="submit-delete" class="red icon-delete" value="delete task">
+                
+                <input type="hidden" name="id" value="{{ maintask.id }}">
+                <input type="hidden" name="folderid" value="{{ folderid }}">
+                <input type="hidden" name="userid" value="{{ user.userid }}">
+                
+<!-- 
+                <input type="button" name="button-share" class="gray icon-share" value=" ">
+                <input type="button" name="button-print" class="gray icon-print" value=" "> -->
+
+            </form>
+
+            <div>
+<!--                 <h3>Attached files:</h3>
+                <ol class="files">                        
+                {% for taskfile in tasksfiles %}                    
+                <li class='filenames' name={{ taskfile['filename'] }} id={{taskfile['id']}}>{{ taskfile['filename'] }}
+                        <a id="openfile" href="/download_file/{{ taskfile['filename'] }}" target="_blank">View File</a> 
+                        <button title="Remove file" class="removebtn"  name={{ taskfile['filename'] }} id="removefile_button"></button>                                             
+                </li>                                         
+                {% endfor %}
+            </ol> -->
+            <div class="small"> <a href="#" onclick="window.open('/upload?id={{ maintask.id }}','File Upload','width=600,height=300,resizable=no'); return false;"> Upload Files!</a></div>
+            <table id="filestbl">
+                <tr><h3>Attached files:</h3></tr>
+                {% for taskfile in tasksfiles %}         
+                <tr>
+                    <td class='filenames' name={{ taskfile['filename'] }} id={{taskfile['id']}}>{{ taskfile['filename'] }} </td>
+                    <td><a id="openfile" href="/download_file/{{ taskfile['filename'] }}" >View File</a> </td>                    
+                    <td><button title="Remove file" class="removebtn"  name={{ taskfile['filename'] }} id="removefile_button"></button> </td>
+                </tr>
+                {% endfor %}
+            </table>
+            </div>
+
+
+            <div class="">
+                <h1>Notes</h1>
+        
+                <div class="text-area" style="margin-bottom: 20px;">
+                <textarea name="note" id="note" placeholder="Enter your note here..." style="height: 5em;margin-left: 5px;"></textarea>
+
+                <button id="add">Add</button>
+                </div>
+                
+                    <div class="notes">
+                        <ul class="w3-ul">
+
+                    {% for tasknote in TaskNotes %}
+                    <div class="box">
+                        <li class="w3-bar">
+                                    <span>{{tasknote['userid']}} : </span> <span>{{tasknote['note']}}</span> <br>
+                                </li>
+                            </div>
+                    {% endfor %}
+
+                        </ul>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/static/main.js"></script>
+</body>
+</html>

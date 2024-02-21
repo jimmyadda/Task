@@ -1,0 +1,4 @@
+Flask_Login==0.6.3
+Flask_Mail==0.9.1
+Werkzeug==2.2.3
+Flask==2.2.5
