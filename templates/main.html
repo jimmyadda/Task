@@ -36,6 +36,9 @@
                 <!-- <button class="gray icon-settings">Settings</button> -->
                 <button class="gray icon-exit" id="logout_button">Logout</button>
             </div>
+            <div class="controls"><br>
+                <button class="blue icon-save" id="alltasks"> All Tasks</button>
+            </div>
         </div>
         
 
@@ -72,11 +75,14 @@
                         <option {{ "selected='selected'" if maintask.priority == 1 else "" }}>1</option>
                         <option {{ "selected='selected'" if maintask.priority == 2 else "" }}>2</option>
                         <option {{ "selected='selected'" if maintask.priority == 3 else "" }}>3</option>
+                        <option {{ "selected='selected'" if maintask.priority == 4 else "" }}>3</option>
+                        <option {{ "selected='selected'" if maintask.priority == 5 else "" }}>3</option>
                     </select>
                     <div><label for="status">Status</label></div>
                     <select  name="status" value="{{ maintask.status }}">
                         <option {{ "selected='selected'" if maintask.status == 'OPEN' else "" }}>OPEN</option>
                         <option {{ "selected='selected'" if maintask.status == 'CLOSE' else "" }}>CLOSE</option>
+                        <option {{ "selected='selected'" if maintask.status == 'REOPEN' else "" }}>REOPEN</option>
                     </select>
                     
                     <div><label for="assignto">Assign To</label></div>

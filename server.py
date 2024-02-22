@@ -184,7 +184,6 @@ def main_page():
     folders = database_read(f"select * from folders order by name;")
     tasks = database_read(f"select * from tasks where folderid= '{folderid}' AND status != 'CLOSE';")
     maintask = database_read(f"select * from tasks where id= '{id}';") #AND userid='{user['userid']}'
-
     closedtasks = database_read(f"select * from tasks where status = 'CLOSE';")
     tasksfiles = database_read(f"select * from tasksfiles where id= '{id}';")
     TaskNotes = database_read(f"select * from TasksNotes where id= '{id}';")
@@ -212,19 +211,19 @@ def task_update():
         #sendmail
         ok = send_notification(change_in_task) 
     if 'submit-reopen' in form:
-        form['status']= 'OPEN'  #status open or close
+        form['status']= 'REOPEN'  #status open or close
         change_in_task= "Task was Reopened"
         #Log
         logger.info(f"Task '{id}' has been Reopened by: {user['userid']} date: {str(datetime.now())}")
         #sendmail
-        ok = send_notification(change_in_task)         
+        #ok = send_notification(change_in_task) - not needed       
     if 'submit-delete' in form:
         database_write(f"delete from tasks where id='{id}';")
         change_in_task= "Task was Deleted"
         #Log
         logger.info(f"Task '{id}' has been delete by: {user['userid']} date: {str(datetime.now())}")
         #mail
-        ok = send_notification(change_in_task) 
+        #ok = send_notification(change_in_task)  - not needed
         return redirect(f"/main?folderid={folderid}")
     if id == "": #new TASK
         id = str(uuid.uuid1())
@@ -459,8 +458,19 @@ def mytask_page():
     user = flask_login.current_user.get_dict()
     mytasks = database_read(f"select ts.*,fol.name as foldername from tasks as ts left join folders as fol on ts.folderid = fol.id where assignto= '{user['name']}'")
     closedtasks = database_read(f"select ts.*,fol.name as foldername from tasks as ts left join folders as fol on ts.folderid = fol.id where  status = 'CLOSE';")
-    print(closedtasks)
     return render_template('mytasks.html',mytasks=mytasks,closedtasks=closedtasks)
+
+
+@app.route("/alltasks", methods=['GET'])
+def alltasks_page():
+    id = request.args.get('id')
+    user = flask_login.current_user.get_dict()
+    Opentasks = database_read(f"select ts.*,fol.name as foldername from tasks as ts left join folders as fol on ts.folderid = fol.id")
+    closedtasks = database_read(f"select ts.*,fol.name as foldername from tasks as ts left join folders as fol on ts.folderid = fol.id where  status = 'CLOSE';")
+    print(closedtasks)
+    return render_template('alltasks.html',Opentasks=Opentasks,closedtasks=closedtasks)
+
+
 
 @app.route("/error")
 def error_page():

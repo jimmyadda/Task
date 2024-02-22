@@ -62,6 +62,10 @@ function logout_user(event){
     window.location.href = "/logout";
         }
 
+        function showalltasks(event){
+            window.location.href = "/alltasks";
+        }
+        
 function Remove_file(event){  
     let folderid = document.querySelector("[name = 'folderid']").value;
     let id = document.querySelector("[name = 'id']").value;
@@ -134,6 +138,8 @@ function Remove_folder(event){
 document.querySelector("#new_task_button").addEventListener("click",newTask);
 document.querySelector("#new_folder_button").addEventListener("click",newFolder);
 document.querySelector("#logout_button").addEventListener("click",logout_user);
+
+document.querySelector("#alltasks").addEventListener("click",showalltasks);
 
 
 let dowloadfiles = document.querySelectorAll("#openfile");
